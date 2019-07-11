@@ -15,6 +15,7 @@ services:
       - /srv/www/backdrop/html/sites:/var/www/html/sites
       - /srv/www/backdrop/html/layouts:/var/www/html/layouts
       - /srv/www/backdrop/html/modules:/var/www/html/modules
+      - /srv/www/backdrop/html/themes:/var/www/html/themes
     environment:
       BACKDROP_DB_HOST: "${BACKDROP_DB_HOST}"
       BACKDROP_DB_PORT: "${BACKDROP_DB_PORT}"
