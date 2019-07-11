@@ -14,7 +14,9 @@ RUN apt-get update && \
     apt-get install -y curl \
              mysql-client \
 	     libpng-dev \
-	     libjpeg-dev
+	     libjpeg-dev \
+	     zlib1g-dev \
+	     libzip-dev
 	     
 RUN docker-php-ext-configure gd --with-png-dir=/usr --with-jpeg-dir=/usr
 
@@ -22,7 +24,8 @@ RUN docker-php-ext-install \
     mbstring \
     pdo \
     pdo_mysql \
-    gd
+    gd \
+    zip
 
 RUN a2enmod rewrite
 
