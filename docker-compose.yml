@@ -1,0 +1,56 @@
+version: '3'
+
+# edit template.env and save as .env before running docker-compose
+
+services:
+  backdrop:
+    build: .
+    image: backrop:apache
+    container_name: backdrop
+    restart: unless-stopped
+    ports:
+      - ${BACKDROP_PORT}:80 
+    volumes:
+      - /srv/www/backdrop/html/files:/var/www/html/files
+      - /srv/www/backdrop/html/sites:/var/www/html/sites
+      - /srv/www/backdrop/html/layouts:/var/www/html/layouts
+      - /srv/www/backdrop/html/modules:/var/www/html/modules
+    environment:
+      BACKDROP_DB_HOST: "${BACKDROP_DB_HOST}"
+      BACKDROP_DB_PORT: "${BACKDROP_DB_PORT}"
+      BACKDROP_DB_NAME: "${BACKDROP_DB_NAME}"
+      BACKDROP_DB_USER: "${BACKDROP_DB_USER}"
+      BACKDROP_DB_PASSWORD: "${BACKDROP_DB_USER_PASSWORD}"
+    depends_on:
+      - backdrop-db
+    
+  pma:
+    image: phpmyadmin/phpmyadmin:latest
+    container_name: backdrop_pma
+    environment:
+      PMA_HOST: "${BACKDROP_DB_HOST}"
+      PMA_PORT: "${BACKDROP_DB_PORT}"
+      MYSQL_ROOT_PASSWORD: "${BACKDROP_DB_ROOT_PASSWORD}"
+    ports:
+      - ${BACKDROP_PHPMYADMIN_PORT}:80
+    depends_on:
+      - backdrop-db
+
+  backdrop-db:
+    image: mariadb:latest
+    container_name: ${BACKDROP_DB_HOST}
+    ports:
+      - ${BACKDROP_DB_PORT}:3306
+    volumes:
+      - /srv/data/backdrop-db:/var/lib/mysql
+      - ./custom-mysql.conf:/etc/mysql/conf.d/custom.cnf
+    environment:
+      MYSQL_DATABASE: "${BACKDROP_DB_NAME}"
+      MYSQL_ROOT_PASSWORD: "${BACKDROP_DB_ROOT_PASSWORD}"
+      MYSQL_USER: "${BACKDROP_DB_USER}"
+      MYSQL_PASSWORD: "${BACKDROP_DB_USER_PASSWORD}"
+
+networks:
+  default:
+    external:
+      name: web
